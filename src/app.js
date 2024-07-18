@@ -25,6 +25,8 @@ app.use(e.static("public", {
 
 
 import userRouter from './routes/user.routes.js'
+import companyRouter from './routes/company.routes.js'
 
 app.use("/v1/users",userRouter)
+app.use("/company",companyRouter)
 export {app}

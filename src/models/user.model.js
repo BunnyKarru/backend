@@ -20,11 +20,13 @@ const userSchema = new Schema({
         type: String,
         required: true
     },
-    company: 
+    company:
+    [ 
         {
             type: Schema.Types.ObjectId,
             ref: "Company"
         }
+    ]
     ,
     working: [
         {
