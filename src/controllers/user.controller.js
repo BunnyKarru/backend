@@ -76,17 +76,25 @@ const loginUser = async (req, res) => {
         const loggedInUser = await User.findById(user._id).select("-password -refreshToken");
 
         // Cookie options
-        const options = {
+        const cookieOptions = {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
+            secure: process.env.NODE_ENV === 'production', // Send cookies over HTTPS only in production
+            sameSite: 'None', // Allow cross-site cookies
         };
 
-        // Set cookies and respond
-        return res
-            .status(200)
-            .cookie("accessToken", accessToken, options)
-            .cookie("refreshToken", refreshToken, options)
-            .json(new ApiResponse(200, { user: loggedInUser, accessToken, refreshToken }, "User logged in successfully"));
+        // Set access token cookie
+        res.cookie('accessToken', accessToken, {
+         cookieOptions,
+           
+        });
+
+        // Set refresh token cookie
+        res.cookie('refreshToken', refreshToken, {
+            cookieOptions
+        });
+
+        // Respond with user data and tokens
+        return res.status(200).json(new ApiResponse(200, { user: loggedInUser, accessToken, refreshToken }, "User logged in successfully"));
     } catch (error) {
         return res.status(error.statusCode || 400).json({ message: error.message });
     }
@@ -98,7 +106,8 @@ const logoutUser = async (req, res) => {
 
         const options = {
             httpOnly: true,
-            secure: true,
+            secure: process.env.NODE_ENV === 'production',
+           sameSite: 'None',
         };
 
         return res
@@ -132,7 +141,9 @@ const refreshAccessToken = async (req, res) => {
 
         const options = {
             httpOnly: true,
-            secure: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'None',
+            
         };
 
         const { accessToken, refreshToken } = await generateAccessAndRefreshToken(user._id);
@@ -147,4 +158,9 @@ const refreshAccessToken = async (req, res) => {
     }
 };
 
-export { registerUser, loginUser, generateAccessAndRefreshToken, logoutUser, refreshAccessToken };
+const getCookie = (req,res) =>{
+    res.send(req.cookies)
+
+}
+
+export { registerUser, loginUser, generateAccessAndRefreshToken, logoutUser, refreshAccessToken , getCookie };

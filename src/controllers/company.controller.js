@@ -28,6 +28,11 @@ const createCompany=async(req,res)=>{
         }
 
         const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "");
+        if (!token) {
+            console.log("Token ivvu ra lucha");
+           return ;
+        }
+
         const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
         const user = await User.findById(decodedToken?._id)
 
