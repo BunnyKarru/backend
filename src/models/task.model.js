@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 import { Schema} from "mongoose";
 
 const taskSchema = new Schema({
@@ -19,6 +19,10 @@ const taskSchema = new Schema({
     },
     dueDate:{
         type:Date,
+    },
+    asign:{
+        type:Schema.Types.ObjectId,
+        ref:"User",
         required:true
     }
 },{timestamps:true})

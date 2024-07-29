@@ -15,7 +15,8 @@ const companySchema = new Schema({
 
     workers:[
         {
-            type:String,
+            type:Schema.Types.ObjectId,
+            ref:"User"
         }     
     ],
 

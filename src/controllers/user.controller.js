@@ -97,8 +97,6 @@ const loginUser = async (req, res) => {
     // Set refresh token cookie
     res.cookie("refreshToken", refreshToken,cookieOptions);
     
-    // Set custom cookie
-    res.cookie("aditya", "good boy");
 
     // Respond with user data and tokens
     return res
@@ -184,9 +182,52 @@ const refreshAccessToken = async (req, res) => {
   }
 };
 
-const getCookie = (req, res) => {
-  res.send(req.cookies);
+const checking = async (req, res) => {
+  try {
+    const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "");
+    if (!token) {
+      return res.status(400).json(new ApiResponse(400, {}, "No token provided"));
+    }
+
+    const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+    const user = await User.findById(decodedToken?._id);
+    
+    if (!user) {
+      return res.status(401).json(new ApiError(401, "No user found"));
+    }
+
+    return res.status(200).json(new ApiResponse(200, user, "Check completed"));
+  } catch (error) {
+    console.error(error);
+    if (error.name === 'JsonWebTokenError') {
+      return res.status(401).send("Invalid token");
+    }
+    if (error.name === 'TokenExpiredError') {
+      return res.status(401).send("Token expired");
+    }
+    return res.status(500).send("Internal Server Error");
+  }
 };
+
+const getAllCompanies = async(req,res) => {
+  try {
+    const {userId}=req.body;
+    const user = await User.findById(userId).populate("company")
+    if (!user) {
+      throw new ApiError(400,"User Not Found")
+    }
+
+    const CompanyDetails = user.company.map(company=>({
+      id : company._id.toString(),
+      name:company.companyName
+    }))
+
+    return res.status(201).json(new ApiResponse(201,CompanyDetails,"results fetched"))
+    
+  } catch (error) {
+    console.log(error);
+  }
+}
 
 export {
   registerUser,
@@ -194,5 +235,6 @@ export {
   generateAccessAndRefreshToken,
   logoutUser,
   refreshAccessToken,
-  getCookie,
+  checking,
+  getAllCompanies
 };

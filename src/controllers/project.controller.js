@@ -26,14 +26,6 @@ const createProject = async(req,res)=>{
     return res.status(201).json(new ApiResponse(200,createdProject,"Project created successfully"))
 
 
-
-    
-
-  
-
-
-
-
     } catch (error) {
         throw new ApiError(401,error)
     }

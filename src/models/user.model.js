@@ -26,8 +26,8 @@ const userSchema = new Schema({
             type: Schema.Types.ObjectId,
             ref: "Company"
         }
-    ]
-    ,
+    ],
+    
     working: [
         {
             type: Schema.Types.ObjectId,

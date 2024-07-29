@@ -8,9 +8,13 @@ const projectSchema = new Schema({
         required:true,
         trim:true
     },
+    company:{
+          type:Schema.Types.ObjectId,
+          ref:"Company"
+    },
     projectDescription:{
         type:String,
-        
+        default:"No Description provided"
     },
     todos:[
         {
